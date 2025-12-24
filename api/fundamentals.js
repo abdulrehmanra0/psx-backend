@@ -1,7 +1,7 @@
 // api/fundamentals.js
-import axios from 'axios';
-import cheerio from 'cheerio';
-import cors from 'cors';
+const axios = require('axios');
+const cheerio = require('cheerio');
+const cors = require('cors');
 
 const corsMiddleware = cors({
   methods: ['GET', 'HEAD'],
@@ -17,7 +17,7 @@ function runMiddleware(req, res, fn) {
   });
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   await runMiddleware(req, res, corsMiddleware);
 
   const { symbol } = req.query;
@@ -43,8 +43,7 @@ export default async function handler(req, res) {
     let eps = "N/A";
     let yearChange = "N/A";
 
-    // 3. Find the data based on your screenshots
-    // We look for divs with class "stats_item"
+    // 3. Find the data
     $('.stats_item').each((index, element) => {
         const label = $(element).find('.stats_label').text().trim();
         const value = $(element).find('.stats_value').text().trim();
@@ -60,10 +59,10 @@ export default async function handler(req, res) {
         }
     });
 
-    // 4. Cache this for 5 minutes (300 seconds)
+    // 4. Cache this for 5 minutes
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate');
 
-    // 5. Return clean JSON
+    // 5. Return JSON
     return res.status(200).json({
       symbol: symbol,
       pe_ratio: peRatio,
@@ -75,4 +74,4 @@ export default async function handler(req, res) {
   } catch (error) {
     return res.status(500).json({ error: 'Failed to scrape data' });
   }
-}
+};
