@@ -1,0 +1,15 @@
+name: Check Stock Prices
+
+on:
+  schedule:
+    # Run every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Allows you to run it manually for testing
+
+jobs:
+  ping-vercel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Vercel Cron API
+        run: |
+          curl "https://psx-backend-omega.vercel.app/api/cron?key=${{ secrets.CRON_SECRET }}"
